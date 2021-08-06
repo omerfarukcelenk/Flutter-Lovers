@@ -1,5 +1,5 @@
 import 'package:flutter_flutter_lovers/locator.dart';
-import 'package:flutter_flutter_lovers/model/user_model.dart';
+import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/auth_base.dart';
 import 'package:flutter_flutter_lovers/services/fake_auth_service.dart';
 import 'package:flutter_flutter_lovers/services/firebase_auth_service.dart';
@@ -47,12 +47,12 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.singInWithGoogle();
     } else {
-      User _user =
-      await _firebaseAuthService.singInWithGoogle();
+      User _user = await _firebaseAuthService.singInWithGoogle();
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
-      if(_sonuc){
+      if (_sonuc) {
         return _user;
-      }else return null;
+      } else
+        return null;
     }
   }
 
@@ -61,12 +61,12 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.singInWithFacebook();
     } else {
-      User _user =
-      await _firebaseAuthService.singInWithFacebook();
+      User _user = await _firebaseAuthService.singInWithFacebook();
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
-      if(_sonuc){
+      if (_sonuc) {
         return _user;
-      }else return null;
+      } else
+        return null;
     }
   }
 
@@ -79,9 +79,11 @@ class UserRepository implements AuthBase {
       User _user =
           await _firebaseAuthService.createUserEmailandPassword(email, sifre);
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
-      if(_sonuc){
-        return _user;
-      }else return null;
+      if (_sonuc) {
+
+        return await _fireStoreDBService.readUser(_user.userId);
+      } else
+        return null;
     }
   }
 
@@ -91,8 +93,9 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.singInWithEmailandPassword(
           email, sifre);
     } else {
-      return await _firebaseAuthService.singInWithEmailandPassword(
+      User _user = await _firebaseAuthService.singInWithEmailandPassword(
           email, sifre);
+      return await _fireStoreDBService.readUser(_user.userId);
     }
   }
 }

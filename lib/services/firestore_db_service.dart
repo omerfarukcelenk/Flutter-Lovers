@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_flutter_lovers/model/user_model.dart';
+import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/database_base.dart';
 
 class FireStoreDBService implements DBBase {
@@ -24,4 +24,17 @@ class FireStoreDBService implements DBBase {
 
     return true;
   }
+
+  @override
+  Future<User> readUser(String userId) async{
+      DocumentSnapshot _okunanUser = await _firestore.collection("users").document(userId).get();
+      Map<String,dynamic> okunanUserBilgilerMap = _okunanUser.data;
+      
+      User _okunanUserNesnesi = User.fromMap(okunanUserBilgilerMap);
+      print("Okunan User Nesnesi : "+ _okunanUserNesnesi.toString());
+      return _okunanUserNesnesi;
+
+  }
+
+
 }
