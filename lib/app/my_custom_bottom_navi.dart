@@ -7,12 +7,14 @@ class MyCustomBottomNavigation extends StatelessWidget {
       {Key key,
       @required this.currentTab,
       @required this.onSelectedTab,
-      @required this.sayfaOlusturucu})
+      @required this.sayfaOlusturucu,
+      @required this.navigatorKeys})
       : super(key: key);
 
   final TabItem currentTab;
   final ValueChanged<TabItem> onSelectedTab;
   final Map<TabItem, Widget> sayfaOlusturucu;
+  final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +28,11 @@ class MyCustomBottomNavigation extends StatelessWidget {
       ),
       tabBuilder: (context, index) {
         final gosterilecekItem = TabItem.values[index];
-        return CupertinoTabView(builder: (context) {
-          return sayfaOlusturucu[gosterilecekItem];
-        });
+        return CupertinoTabView(
+            navigatorKey: navigatorKeys[gosterilecekItem],
+            builder: (context) {
+              return sayfaOlusturucu[gosterilecekItem];
+            });
       },
     );
   }
