@@ -75,15 +75,15 @@ class FirebaseAuthService implements AuthBase {
   @override
   Future<User> singInWithFacebook() async {
     final _facebookLogin = FacebookLogin();
-    FacebookLoginResult _faceResult = await _facebookLogin
-        .logIn(['public_profile', 'email']);
+    FacebookLoginResult _faceResult =
+        await _facebookLogin.logIn(['public_profile', 'email']);
 
     switch (_faceResult.status) {
       case FacebookLoginStatus.loggedIn:
         if (_faceResult.accessToken != null) {
-          AuthResult _firebaseResult = await _firebaseAuth.signInWithCredential(FacebookAuthProvider.getCredential(
-              accessToken: _faceResult.accessToken.token
-          ));
+          AuthResult _firebaseResult = await _firebaseAuth.signInWithCredential(
+              FacebookAuthProvider.getCredential(
+                  accessToken: _faceResult.accessToken.token));
           FirebaseUser _user = _firebaseResult.user;
           return _userFromFirebase(_user);
         }
@@ -100,23 +100,23 @@ class FirebaseAuthService implements AuthBase {
   }
 
   @override
-  Future<User> createUserEmailandPassword(String email, String sifre) async{
-    try {
-      AuthResult sonuc = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: sifre);
+  Future<User> createUserEmailandPassword(String email, String sifre) async {
+
+      AuthResult sonuc = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: sifre);
       return _userFromFirebase(sonuc.user);
-    } catch (e) {
-      print("Hata singInAnonymously " + e.toString());
-      return null;
-    }
+
+
   }
 
   @override
-  Future<User> singInWithEmailandPassword(String email, String sifre) async{
+  Future<User> singInWithEmailandPassword(String email, String sifre) async {
     try {
-      AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: sifre);
+      AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: sifre);
       return _userFromFirebase(sonuc.user);
     } catch (e) {
-      print("Hata singInAnonymously " + e.toString());
+      print("Hata singInWithEmailandPassword hata: " + e.toString());
       return null;
     }
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_flutter_lovers/app/hata_exception.dart';
 import 'package:flutter_flutter_lovers/app/home_page.dart';
 import 'package:flutter_flutter_lovers/common_widgets/social_log_in_button.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
@@ -24,17 +26,40 @@ class _EmailVeSifreLoginPageState extends State<EmailVeSifreLoginPage> {
     debugPrint("Email :" + _email + " şifre: " + _sifre);
     final _userModel = Provider.of<UserModel>(context, listen: false);
     if (_formType == FormType.LogIn) {
-      User _girisYapanUser =
-          await _userModel.singInWithEmailandPassword(_email, _sifre);
-      if (_girisYapanUser != null) {
-        print("Oturum açan user id: " + _girisYapanUser.userId.toString());
+      try {
+        User _girisYapanUser =
+            await _userModel.singInWithEmailandPassword(_email, _sifre);
+        if (_girisYapanUser != null) {
+          print("Oturum açan user id: " + _girisYapanUser.userId.toString());
+        }
+      } on PlatformException catch (e) {
+        debugPrint("Widget oturum açma hata yakalandı : " + e.code.toString());
       }
     } else {
-      User _olusturulanYapanUser =
-          await _userModel.createUserEmailandPassword(_email, _sifre);
-      if (_olusturulanYapanUser != null) {
-        print(
-            "Oturum açan user id: " + _olusturulanYapanUser.userId.toString());
+      try {
+        User _olusturulanYapanUser =
+            await _userModel.createUserEmailandPassword(_email, _sifre);
+        if (_olusturulanYapanUser != null) {
+          print("Oturum açan user id: " +
+              _olusturulanYapanUser.userId.toString());
+        }
+      } on PlatformException catch (e) {
+        debugPrint("Widget kullanıcı olusturma hata yakalandı : " +
+            Hatalar.goster(e.code));
+
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("Kullanıcı Oluşturma hatası"),
+                content: Text(Hatalar.goster(e.code)),
+                actions: <Widget>[
+                  TextButton(onPressed: () {
+                      Navigator.pop(context);
+                  }, child: Text("Tamam"))
+                ],
+              );
+            });
       }
     }
   }

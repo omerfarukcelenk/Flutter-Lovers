@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_flutter_lovers/locator.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/auth_base.dart';
@@ -50,7 +51,7 @@ class UserRepository implements AuthBase {
       User _user = await _firebaseAuthService.singInWithGoogle();
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
       if (_sonuc) {
-        return _user;
+        return await _fireStoreDBService.readUser(_user.userId);
       } else
         return null;
     }
@@ -64,7 +65,7 @@ class UserRepository implements AuthBase {
       User _user = await _firebaseAuthService.singInWithFacebook();
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
       if (_sonuc) {
-        return _user;
+        return await _fireStoreDBService.readUser(_user.userId);
       } else
         return null;
     }
@@ -80,7 +81,6 @@ class UserRepository implements AuthBase {
           await _firebaseAuthService.createUserEmailandPassword(email, sifre);
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
       if (_sonuc) {
-
         return await _fireStoreDBService.readUser(_user.userId);
       } else
         return null;
@@ -93,9 +93,14 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.singInWithEmailandPassword(
           email, sifre);
     } else {
-      User _user = await _firebaseAuthService.singInWithEmailandPassword(
-          email, sifre);
-      return await _fireStoreDBService.readUser(_user.userId);
+      try {
+        User _user =
+            await _firebaseAuthService.singInWithEmailandPassword(email, sifre);
+        return await _fireStoreDBService.readUser(_user.userId);
+      } catch (e) {
+        debugPrint(
+            "Repoda singInWithEmailandPassword hata var : " + e.toString());
+      }
     }
   }
 }

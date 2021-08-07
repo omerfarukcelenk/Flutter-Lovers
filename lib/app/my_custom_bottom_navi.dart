@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flutter_lovers/tab_items.dart';
+import 'package:flutter_flutter_lovers/app/tab_items.dart';
 
 class MyCustomBottomNavigation extends StatelessWidget {
   const MyCustomBottomNavigation(

@@ -3,7 +3,7 @@ import 'package:flutter_flutter_lovers/app/kullanicilar.dart';
 import 'package:flutter_flutter_lovers/app/my_custom_bottom_navi.dart';
 import 'package:flutter_flutter_lovers/app/profil.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
-import 'package:flutter_flutter_lovers/tab_items.dart';
+import 'package:flutter_flutter_lovers/app/tab_items.dart';
 import 'package:flutter_flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
 
