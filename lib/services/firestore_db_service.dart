@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/database_base.dart';
@@ -31,5 +32,16 @@ class FireStoreDBService implements DBBase {
     User _okunanUserNesnesi = User.fromMap(okunanUserBilgilerMap);
     print("Okunan User Nesnesi : " + _okunanUserNesnesi.toString());
     return _okunanUserNesnesi;
+  }
+
+  @override
+  Future<bool> updateUserName(String userId, String yeniUserName) async{
+    var users = await _firestore.collection("users").where("userName",isEqualTo:yeniUserName).getDocuments();
+    if(users.documents.length >= 1){
+      return false;
+    }else{
+      await _firestore.collection("users").document(userId).updateData({'userName': yeniUserName});
+      return true;
+    }
   }
 }

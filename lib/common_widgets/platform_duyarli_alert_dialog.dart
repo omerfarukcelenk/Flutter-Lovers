@@ -43,7 +43,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       content: Text(icerik),
       actions: _dialogButtonlariniAyarla(context),
     );
-    ;
+
   }
 
   List<Widget> _dialogButtonlariniAyarla(BuildContext context) {

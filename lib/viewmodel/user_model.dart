@@ -99,17 +99,16 @@ class UserModel with ChangeNotifier implements AuthBase {
 
   @override
   Future<User> createUserEmailandPassword(String email, String sifre) async {
-
-      if (_emailSifreKontrol(email, sifre)) {
-       try{
-         state = ViewState.Busy;
-         _user = await _userRepository.createUserEmailandPassword(email, sifre);
-         return _user;
-       }finally{
-         state = ViewState.Idle;
-       }
-      } else
-        return null;
+    if (_emailSifreKontrol(email, sifre)) {
+      try {
+        state = ViewState.Busy;
+        _user = await _userRepository.createUserEmailandPassword(email, sifre);
+        return _user;
+      } finally {
+        state = ViewState.Idle;
+      }
+    } else
+      return null;
   }
 
   @override
@@ -121,9 +120,6 @@ class UserModel with ChangeNotifier implements AuthBase {
         return _user;
       } else
         return null;
-    } catch (e) {
-      debugPrint("ViewModeldeki  singInWithEmailandPassword  hata: " + e.toString());
-      return null;
     } finally {
       state = ViewState.Idle;
     }
@@ -142,5 +138,16 @@ class UserModel with ChangeNotifier implements AuthBase {
     } else
       emailHataMesaji = null;
     return sonuc;
+  }
+
+  Future<bool> updateUserName(String userId ,String yeniUserName) async{
+
+    var sonuc = _userRepository.updateUserName(userId, yeniUserName);
+    if (sonuc != null){
+      _user.userName = yeniUserName;
+    }
+    return sonuc;
+
+
   }
 }

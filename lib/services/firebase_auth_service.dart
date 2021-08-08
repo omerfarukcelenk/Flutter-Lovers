@@ -19,8 +19,11 @@ class FirebaseAuthService implements AuthBase {
   }
 
   User _userFromFirebase(FirebaseUser user) {
-    if (user == null) return null;
-    return User(userId: user.uid, email: user.email);
+    if (user == null) {
+      return null;
+    } else {
+      return User(userId: user.uid, email: user.email);
+    }
   }
 
   @override
@@ -101,23 +104,15 @@ class FirebaseAuthService implements AuthBase {
 
   @override
   Future<User> createUserEmailandPassword(String email, String sifre) async {
-
-      AuthResult sonuc = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: sifre);
-      return _userFromFirebase(sonuc.user);
-
-
+    AuthResult sonuc = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: sifre);
+    return _userFromFirebase(sonuc.user);
   }
 
   @override
   Future<User> singInWithEmailandPassword(String email, String sifre) async {
-    try {
-      AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: sifre);
-      return _userFromFirebase(sonuc.user);
-    } catch (e) {
-      print("Hata singInWithEmailandPassword hata: " + e.toString());
-      return null;
-    }
+    AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: sifre);
+    return _userFromFirebase(sonuc.user);
   }
 }

@@ -32,11 +32,11 @@ class User {
   }
 
   User.fromMap(Map<String, dynamic> map)
-      : userId = map["userID"],
+      : userId = map["userId"],
         email = map["email"],
         userName = map["userName"],
-        profilUrl = map["profilUrl"],
-        createdAt = (map["createdAt"] as Timestamp).toString(),
+        profilUrl = map["profileURL"],
+        createdAt = (map["createdAT"] as Timestamp).toString(),
         updatedAt = (map["updatedAt"] as Timestamp).toString(),
         seviye = map["seviye"];
 

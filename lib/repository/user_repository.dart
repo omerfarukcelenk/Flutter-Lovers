@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_flutter_lovers/locator.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/auth_base.dart';
@@ -11,7 +10,7 @@ enum AppMode { DEBUG, RELEASE }
 class UserRepository implements AuthBase {
   FirebaseAuthService _firebaseAuthService = locator<FirebaseAuthService>();
   FakeAuthenticationService _fakeAuthenticationService =
-      locator<FakeAuthenticationService>();
+  locator<FakeAuthenticationService>();
   FireStoreDBService _fireStoreDBService = locator<FireStoreDBService>();
 
   AppMode appMode = AppMode.RELEASE;
@@ -21,7 +20,9 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.currentUser();
     } else {
-      return await _firebaseAuthService.currentUser();
+      User _user =
+      await _firebaseAuthService.currentUser();
+      return await _fireStoreDBService.readUser(_user.userId);
     }
   }
 
@@ -78,7 +79,7 @@ class UserRepository implements AuthBase {
           email, sifre);
     } else {
       User _user =
-          await _firebaseAuthService.createUserEmailandPassword(email, sifre);
+      await _firebaseAuthService.createUserEmailandPassword(email, sifre);
       bool _sonuc = await _fireStoreDBService.saveUser(_user);
       if (_sonuc) {
         return await _fireStoreDBService.readUser(_user.userId);
@@ -93,14 +94,18 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.singInWithEmailandPassword(
           email, sifre);
     } else {
-      try {
-        User _user =
-            await _firebaseAuthService.singInWithEmailandPassword(email, sifre);
-        return await _fireStoreDBService.readUser(_user.userId);
-      } catch (e) {
-        debugPrint(
-            "Repoda singInWithEmailandPassword hata var : " + e.toString());
-      }
+      User _user =
+      await _firebaseAuthService.singInWithEmailandPassword(email, sifre);
+      return await _fireStoreDBService.readUser(_user.userId);
     }
   }
+
+  Future<bool> updateUserName(String userId, String yeniUserName) async {
+    if (appMode == AppMode.DEBUG) {
+      return false;
+    } else {
+      return await _fireStoreDBService.updateUserName(userId, yeniUserName);
+    }
+  }
+
 }
