@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flutter_lovers/common_widgets/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_flutter_lovers/common_widgets/social_log_in_button.dart';
 import 'package:flutter_flutter_lovers/viewmodel/user_model.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfilPage extends StatefulWidget {
@@ -12,6 +15,36 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> {
   TextEditingController _controllerUserName;
+
+  File _profilFoto;
+
+  void _kameradanFotoCek() async {
+    PickedFile pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _profilFoto = File(pickedFile.path);
+        Navigator.of(context).pop();
+      });
+    }
+  }
+
+  void _galeridenResimSec() async {
+    PickedFile pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _profilFoto = File(pickedFile.path);
+        Navigator.of(context).pop();
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -51,10 +84,39 @@ class _ProfilPageState extends State<ProfilPage> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 75,
-                    backgroundColor: Colors.white,
-                    backgroundImage: NetworkImage(_userModel.user.profilUrl),
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              height: 160,
+                              child: Column(
+                                children: <Widget>[
+                                  ListTile(
+                                    leading: Icon(Icons.camera),
+                                    title: Text("Kamerada Çek"),
+                                    onTap: () {
+                                      _kameradanFotoCek();
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.image),
+                                    title: Text("Galeriden Seç"),
+                                    onTap: () {
+                                      _galeridenResimSec();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    },
+                    child: CircleAvatar(
+                      radius: 75,
+                      backgroundColor: Colors.white,
+                      backgroundImage: _profilFoto == null ? NetworkImage(_userModel.user.profilUrl) : FileImage(_profilFoto),
+                    ),
                   ),
                 ),
                 Padding(
@@ -86,6 +148,7 @@ class _ProfilPageState extends State<ProfilPage> {
                     buttonText: "Değişikleri Kaydet",
                     onPressed: () {
                       _userNameGuncelle(context);
+                      _profilFotoGuncelle(context);
                     },
                   ),
                 )
@@ -120,14 +183,14 @@ class _ProfilPageState extends State<ProfilPage> {
       var updateResult = await _userModel.updateUserName(
           _userModel.user.userId, _controllerUserName.text);
 
-      if(updateResult == true){
+      if (updateResult == true) {
         _userModel.user.userName = _controllerUserName.text;
         PlatformDuyarliAlertDialog(
           label: "Başarılı",
           icerik: "Username değiştirildi",
           anaButtonYazisi: "Tamam",
         ).goster(context);
-      }else{
+      } else {
         _controllerUserName.text = _userModel.user.userName;
         PlatformDuyarliAlertDialog(
           label: "Başarılı",
@@ -135,12 +198,17 @@ class _ProfilPageState extends State<ProfilPage> {
           anaButtonYazisi: "Tamam",
         ).goster(context);
       }
-    } else {
-      PlatformDuyarliAlertDialog(
-        label: "Hata",
-        icerik: "Username değişikliği yapmadınız",
-        anaButtonYazisi: "Tamam",
-      ).goster(context);
     }
   }
+
+  Future<void> _profilFotoGuncelle(BuildContext context) async {
+    final _userModel = Provider.of<UserModel>(context, listen: false);
+    if(_profilFoto != null){
+      var url = await _userModel.uploadFile(_userModel.user.userId, "profil_foto", _profilFoto);
+      print("gelen url : $url");
+    }
+
+  }
+
+
 }
