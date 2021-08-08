@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_flutter_lovers/app/hata_exception.dart';
 import 'package:flutter_flutter_lovers/app/home_page.dart';
+import 'package:flutter_flutter_lovers/common_widgets/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_flutter_lovers/common_widgets/social_log_in_button.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/viewmodel/user_model.dart';
@@ -28,7 +29,7 @@ class _EmailVeSifreLoginPageState extends State<EmailVeSifreLoginPage> {
     if (_formType == FormType.LogIn) {
       try {
         User _girisYapanUser =
-            await _userModel.singInWithEmailandPassword(_email, _sifre);
+        await _userModel.singInWithEmailandPassword(_email, _sifre);
         if (_girisYapanUser != null) {
           print("Oturum açan user id: " + _girisYapanUser.userId.toString());
         }
@@ -38,36 +39,26 @@ class _EmailVeSifreLoginPageState extends State<EmailVeSifreLoginPage> {
     } else {
       try {
         User _olusturulanYapanUser =
-            await _userModel.createUserEmailandPassword(_email, _sifre);
+        await _userModel.createUserEmailandPassword(_email, _sifre);
         if (_olusturulanYapanUser != null) {
           print("Oturum açan user id: " +
               _olusturulanYapanUser.userId.toString());
         }
       } on PlatformException catch (e) {
-        debugPrint("Widget kullanıcı olusturma hata yakalandı : " +
-            Hatalar.goster(e.code));
 
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Kullanıcı Oluşturma hatası"),
-                content: Text(Hatalar.goster(e.code)),
-                actions: <Widget>[
-                  TextButton(onPressed: () {
-                      Navigator.pop(context);
-                  }, child: Text("Tamam"))
-                ],
-              );
-            });
-      }
+          PlatformDuyarliAlertDialog(
+            label: "kullanıcı olusturma hata ",
+            icerik: Hatalar.goster(e.code),
+            anaButtonYazisi: "Tamam",
+          ).goster(context);
+        }
     }
   }
 
   void _degistir() {
     setState(() {
       _formType =
-          _formType == FormType.LogIn ? FormType.Register : FormType.LogIn;
+      _formType == FormType.LogIn ? FormType.Register : FormType.LogIn;
     });
   }
 
@@ -90,69 +81,71 @@ class _EmailVeSifreLoginPageState extends State<EmailVeSifreLoginPage> {
         appBar: AppBar(title: Text("Giriş / Kayıt")),
         body: _userModel.state == ViewState.Idle
             ? SingleChildScrollView(
-                child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formkey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          errorText: _userModel.emailHataMesaji != null
-                              ? _userModel.emailHataMesaji
-                              : null,
-                          prefixIcon: Icon(Icons.mail),
-                          hintText: 'Email',
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                        onSaved: (String girilenEmail) {
-                          _email = girilenEmail;
-                        },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formkey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        errorText: _userModel.emailHataMesaji != null
+                            ? _userModel.emailHataMesaji
+                            : null,
+                        prefixIcon: Icon(Icons.mail),
+                        hintText: 'Email',
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
                       ),
-                      SizedBox(
-                        height: 8,
+                      onSaved: (String girilenEmail) {
+                        _email = girilenEmail;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        errorText: _userModel.sifreHataMesaji != null
+                            ? _userModel.sifreHataMesaji
+                            : null,
+                        prefixIcon: Icon(Icons.mail),
+                        hintText: 'Password',
+                        labelText: 'Password',
+                        border: OutlineInputBorder(),
                       ),
-                      TextFormField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          errorText: _userModel.sifreHataMesaji != null
-                              ? _userModel.sifreHataMesaji
-                              : null,
-                          prefixIcon: Icon(Icons.mail),
-                          hintText: 'Password',
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        onSaved: (String girilenPassword) {
-                          _sifre = girilenPassword;
-                        },
+                      onSaved: (String girilenPassword) {
+                        _sifre = girilenPassword;
+                      },
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    SocialLoginButton(
+                      buttonText: _buttonText,
+                      buttonColor: Theme
+                          .of(context)
+                          .primaryColor,
+                      onPressed: () => _formSubmit(),
+                      radius: 20,
+                      buttonIcon: Icon(
+                        Icons.input,
+                        size: 20,
                       ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      SocialLoginButton(
-                        buttonText: _buttonText,
-                        buttonColor: Theme.of(context).primaryColor,
-                        onPressed: () => _formSubmit(),
-                        radius: 20,
-                        buttonIcon: Icon(
-                          Icons.input,
-                          size: 20,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextButton(
-                          onPressed: () => _degistir(), child: Text(_linkText))
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextButton(
+                        onPressed: () => _degistir(), child: Text(_linkText))
+                  ],
                 ),
-              ))
+              ),
+            ))
             : Center(
-                child: CircularProgressIndicator(),
-              ));
+          child: CircularProgressIndicator(),
+        ));
   }
 }
