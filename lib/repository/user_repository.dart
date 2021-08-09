@@ -117,14 +117,21 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return "dosya indirme linki";
     } else {
-
       var profilFotoUrl = await _firebaseStorageService.uploadFile(
           userId, fileType, profilFoto);
 
       await _fireStoreDBService.updateProfilFoto(userId, profilFotoUrl);
 
-
       return profilFotoUrl;
+    }
+  }
+
+  Future<List<User>> getAllUser() async {
+    if (appMode == AppMode.DEBUG) {
+      return [];
+    } else {
+      var tumKullaniciListesi = await _fireStoreDBService.getAllUser();
+      return tumKullaniciListesi;
     }
   }
 }

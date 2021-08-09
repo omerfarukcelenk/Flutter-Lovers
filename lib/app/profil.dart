@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flutter_lovers/common_widgets/platform_duyarli_alert_dialog.dart';
@@ -206,6 +205,13 @@ class _ProfilPageState extends State<ProfilPage> {
     if(_profilFoto != null){
       var url = await _userModel.uploadFile(_userModel.user.userId, "profil_foto", _profilFoto);
       print("gelen url : $url");
+      if(url != null){
+        PlatformDuyarliAlertDialog(
+          label: "Başarılı",
+          icerik: "Profil Fotoğrafınız güncellendi",
+          anaButtonYazisi: "Tamam",
+        ).goster(context);
+      }
     }
 
   }

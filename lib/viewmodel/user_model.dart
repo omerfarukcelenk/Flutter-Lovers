@@ -28,6 +28,7 @@ class UserModel with ChangeNotifier implements AuthBase {
     currentUser();
   }
 
+
   @override
   Future<User> currentUser() async {
     try {
@@ -55,6 +56,13 @@ class UserModel with ChangeNotifier implements AuthBase {
     } finally {
       state = ViewState.Idle;
     }
+  }
+
+  Future<List<User>> getAllUser() async {
+
+    var tumKullaniciListesi = await _userRepository.getAllUser();
+    return tumKullaniciListesi;
+
   }
 
   @override
@@ -156,6 +164,7 @@ class UserModel with ChangeNotifier implements AuthBase {
   Future<String> uploadFile(String userId, String fileType, File profilFoto) async {
     var indirmeLinki = _userRepository.uploadFile(userId, fileType, profilFoto);
     return indirmeLinki;
-
   }
+
+
 }
