@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_flutter_lovers/locator.dart';
+import 'package:flutter_flutter_lovers/model/mesaj.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/repository/user_repository.dart';
 import 'package:flutter_flutter_lovers/services/auth_base.dart';
@@ -164,6 +165,14 @@ class UserModel with ChangeNotifier implements AuthBase {
   Future<String> uploadFile(String userId, String fileType, File profilFoto) async {
     var indirmeLinki = _userRepository.uploadFile(userId, fileType, profilFoto);
     return indirmeLinki;
+  }
+
+  Stream<List<Mesaj>> getMessages(String currentUserID, String sohbetEdilenUserID) {
+    return _userRepository.getMasseges(currentUserID,sohbetEdilenUserID);
+  }
+
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) {
+    return _userRepository.saveMessage(kaydedilecekMesaj);
   }
 
 
