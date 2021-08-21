@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flutter_lovers/model/mesaj.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class Konusma extends StatefulWidget {
   final User currentUser;
@@ -23,7 +25,6 @@ class _KonusmaState extends State<Konusma> {
     final _userModel = Provider.of<UserModel>(context, listen: false);
     User _currentUser = widget.currentUser;
     User _sohbetEdilenUser = widget.sohbetEdilenUser;
-
 
     return Scaffold(
         appBar: AppBar(
@@ -97,7 +98,11 @@ class _KonusmaState extends State<Konusma> {
                               await _userModel.saveMessage(_kaydedilecekMesaj);
                           if (sonuc) {
                             _mesajController.clear();
-                            _scrollController.animateTo(0.0,duration: const Duration(milliseconds: 100), curve: Curves.easeOut,);
+                            _scrollController.animateTo(
+                              0.0,
+                              duration: const Duration(milliseconds: 100),
+                              curve: Curves.easeOut,
+                            );
                           }
                         }
                         ;
@@ -115,6 +120,14 @@ class _KonusmaState extends State<Konusma> {
     Color _gelenMesajRenk = Colors.blue;
     Color _gidenMesajRenk = Theme.of(context).primaryColor;
 
+    var _saatDakikaDegeri = "";
+
+    try {
+      _saatDakikaDegeri = _saatDakikaGoster(oankiMesaj.date ?? Timestamp(1, 1));
+    } catch (e) {
+      print("hata mesajı: ${e.toString()}");
+    }
+
     var _benimMesajimMi = oankiMesaj.bendenMi;
 
     if (_benimMesajimMi) {
@@ -123,21 +136,30 @@ class _KonusmaState extends State<Konusma> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: _gidenMesajRenk,
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(4),
-              child: Text(oankiMesaj.mesaj, style: TextStyle(
-                color: Colors.white
-              ),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: _gidenMesajRenk,
+                    ),
+                    padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(4),
+                    child: Text(
+                      oankiMesaj.mesaj,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                Text(_saatDakikaDegeri)
+              ],
             ),
           ],
         ),
       );
-    } else{
+    } else {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -148,15 +170,21 @@ class _KonusmaState extends State<Konusma> {
                   backgroundImage:
                       NetworkImage(widget.sohbetEdilenUser.profilUrl),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: _gelenMesajRenk,
+                Flexible(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: _gelenMesajRenk,
+                    ),
+                    padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(4),
+                    child: Text(
+                      oankiMesaj.mesaj,
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(4),
-                  child: Text(oankiMesaj.mesaj,style: TextStyle(color: Colors.white),),
                 ),
+                Text(_saatDakikaDegeri)
               ],
             ),
           ],
@@ -164,5 +192,11 @@ class _KonusmaState extends State<Konusma> {
         ),
       );
     }
+  }
+
+  String _saatDakikaGoster(Timestamp date) {
+    var _formatter = DateFormat.Hm();
+    var _formatlanmisTarih = _formatter.format(date.toDate());
+    return _formatlanmisTarih;
   }
 }
