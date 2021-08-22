@@ -102,7 +102,7 @@ class FireStoreDBService implements DBBase {
         .collection("konusmalar")
         .document(currentUserID + "--" + sohbetEdilenUser)
         .collection("mesajlar")
-        .orderBy("date",descending: true)
+        .orderBy("date", descending: true)
         .snapshots();
 
     return snapShot.map((mesajListesi) => mesajListesi.documents
@@ -125,6 +125,14 @@ class FireStoreDBService implements DBBase {
         .document(_mesajID)
         .setData(_kaydedilecekMesajYapisi);
 
+    await _firestore.collection("konusmalar").document(_myDocumentID).setData({
+      "konusma_sahibi": kaydedilecekMesaj.kimden,
+      "kimle_konusuyor": kaydedilecekMesaj.kime,
+      "son_yollanan_mesaj": kaydedilecekMesaj.mesaj,
+      "konusma_goruldu": false,
+      "olusturulma_tarihi": FieldValue.serverTimestamp(),
+    });
+
     _kaydedilecekMesajYapisi.update("bendenMi", (deger) => false);
 
     await _firestore
@@ -133,6 +141,17 @@ class FireStoreDBService implements DBBase {
         .collection("mesajlar")
         .document(_mesajID)
         .setData(_kaydedilecekMesajYapisi);
+
+    await _firestore
+        .collection("konusmalar")
+        .document(_receiverDocumentId)
+        .setData({
+      "konusma_sahibi": kaydedilecekMesaj.kime,
+      "kimle_konusuyor": kaydedilecekMesaj.kimden,
+      "son_yollanan_mesaj": kaydedilecekMesaj.mesaj,
+      "konusma_goruldu": false,
+      "olusturulma_tarihi": FieldValue.serverTimestamp(),
+    });
 
     return true;
   }
