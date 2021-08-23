@@ -21,7 +21,8 @@ class User {
     return {
       'userId': userId,
       'email': email,
-      'userName': userName ??  email.substring(0, email.indexOf('@')) + randomSayiUret(),
+      'userName':
+          userName ?? email.substring(0, email.indexOf('@')) + randomSayiUret(),
       'profileURL': profilUrl ??
           'https://avatars.githubusercontent.com/u/71720425?s=400&u=81460497d3d3d27c22f1278c3a3e94c756bc6e32&v=4',
       'createdAT': createdAt ?? FieldValue.serverTimestamp(),
@@ -38,6 +39,11 @@ class User {
         createdAt = (map["createdAT"] as Timestamp).toString(),
         updatedAt = (map["updatedAt"] as Timestamp).toString(),
         seviye = map["seviye"];
+
+  User.idVeResim({
+    @required this.userId,
+    @required this.profilUrl,
+  });
 
   @override
   String toString() {
