@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_flutter_lovers/locator.dart';
+import 'package:flutter_flutter_lovers/model/konusma.dart';
 import 'package:flutter_flutter_lovers/model/mesaj.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/repository/user_repository.dart';
@@ -28,7 +29,6 @@ class UserModel with ChangeNotifier implements AuthBase {
   UserModel() {
     currentUser();
   }
-
 
   @override
   Future<User> currentUser() async {
@@ -60,10 +60,8 @@ class UserModel with ChangeNotifier implements AuthBase {
   }
 
   Future<List<User>> getAllUser() async {
-
     var tumKullaniciListesi = await _userRepository.getAllUser();
     return tumKullaniciListesi;
-
   }
 
   @override
@@ -151,29 +149,30 @@ class UserModel with ChangeNotifier implements AuthBase {
     return sonuc;
   }
 
-  Future<bool> updateUserName(String userId ,String yeniUserName) async{
-
+  Future<bool> updateUserName(String userId, String yeniUserName) async {
     var sonuc = _userRepository.updateUserName(userId, yeniUserName);
-    if (sonuc != null){
+    if (sonuc != null) {
       _user.userName = yeniUserName;
     }
     return sonuc;
-
-
   }
 
-  Future<String> uploadFile(String userId, String fileType, File profilFoto) async {
+  Future<String> uploadFile(
+      String userId, String fileType, File profilFoto) async {
     var indirmeLinki = _userRepository.uploadFile(userId, fileType, profilFoto);
     return indirmeLinki;
   }
 
-  Stream<List<Mesaj>> getMessages(String currentUserID, String sohbetEdilenUserID) {
-    return _userRepository.getMasseges(currentUserID,sohbetEdilenUserID);
+  Stream<List<Mesaj>> getMessages(
+      String currentUserID, String sohbetEdilenUserID) {
+    return _userRepository.getMasseges(currentUserID, sohbetEdilenUserID);
   }
 
-  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) {
-    return _userRepository.saveMessage(kaydedilecekMesaj);
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
+    return await _userRepository.saveMessage(kaydedilecekMesaj);
   }
 
-
+  Future<List<Konusma>> getAllConversations(String userId) async {
+    return await _userRepository.getAllConversations(userId);
+  }
 }

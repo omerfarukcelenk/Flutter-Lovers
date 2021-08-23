@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_flutter_lovers/model/konusma.dart';
 import 'package:flutter_flutter_lovers/model/mesaj.dart';
 import 'package:flutter_flutter_lovers/model/user.dart';
 import 'package:flutter_flutter_lovers/services/database_base.dart';
@@ -78,6 +79,24 @@ class FireStoreDBService implements DBBase {
         .toList();
 
     return tumKullanicilar;
+  }
+
+  @override
+  Future<List<Konusma>> getAllConversations(String userID) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection("konusmalar")
+        .where("konusma_sahibi", isEqualTo: userID)
+        .orderBy("olusturulma_tarihi", descending: true)
+        .getDocuments();
+
+    List<Konusma> tumKonusmalar = [];
+
+    for (DocumentSnapshot tekKonusma in querySnapshot.documents) {
+      Konusma _tekKonusma = Konusma.fromMap(tekKonusma.data);
+      tumKonusmalar.add(_tekKonusma);
+    }
+
+    return tumKonusmalar;
   }
 
   /*
