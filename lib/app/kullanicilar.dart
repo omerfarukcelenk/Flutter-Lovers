@@ -58,8 +58,31 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
                       }),
                 );
               } else {
-                return Center(
-                  child: Text("Kayıtlı bir kullanıcı yok"),
+                return RefreshIndicator(
+                  onRefresh: () {},
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Container(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.supervised_user_circle,
+                              color: Theme.of(context).primaryColor,
+                              size: 120,
+                            ),
+                            Text(
+                              "Henüz Kullanıcı Yok",
+                              style: TextStyle(fontSize: 36),
+                            ),
+                          ],
+                        ),
+                      ),
+                      height: MediaQuery.of(context).size.height - 150,
+                    ),
+                  ),
                 );
               }
             } else {

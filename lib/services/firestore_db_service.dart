@@ -174,4 +174,15 @@ class FireStoreDBService implements DBBase {
 
     return true;
   }
+
+  @override
+  Future<DateTime> saatiGoster(String userID) async {
+    await _firestore.collection("server").document(userID).setData({
+      "saat": FieldValue.serverTimestamp(),
+    });
+    var okunanMap =
+        await _firestore.collection("server").document(userID).get();
+    Timestamp okunanTarih = okunanMap.data["saat"];
+    return okunanTarih.toDate();
+  }
 }

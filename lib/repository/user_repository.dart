@@ -9,6 +9,7 @@ import 'package:flutter_flutter_lovers/services/fake_auth_service.dart';
 import 'package:flutter_flutter_lovers/services/firebase_auth_service.dart';
 import 'package:flutter_flutter_lovers/services/firebase_storage_service.dart';
 import 'package:flutter_flutter_lovers/services/firestore_db_service.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 enum AppMode { DEBUG, RELEASE }
 
@@ -159,6 +160,8 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return [];
     } else {
+      DateTime _zaman = await _fireStoreDBService.saatiGoster(userId);
+
       var konusmaListesi =
           await _fireStoreDBService.getAllConversations(userId);
 
@@ -180,6 +183,7 @@ class UserRepository implements AuthBase {
           oankiKonusma.konusulanUserProfileURL =
               _veritabanindanOkunanUser.profilUrl;
         }
+        timeagoHesapla(oankiKonusma, _zaman);
       }
       return konusmaListesi;
     }
@@ -192,5 +196,15 @@ class UserRepository implements AuthBase {
       }
     }
     return null;
+  }
+
+  void timeagoHesapla(Konusma oankiKonusma, DateTime zaman) {
+    oankiKonusma.sonOkunmaZamani = zaman;
+
+    timeago.setLocaleMessages("tr", timeago.TrMessages());
+
+    var _duration = zaman.difference(oankiKonusma.olusturulma_tarihi.toDate());
+    oankiKonusma.aradakiFark =
+        timeago.format(zaman.subtract(_duration), locale: "tr");
   }
 }

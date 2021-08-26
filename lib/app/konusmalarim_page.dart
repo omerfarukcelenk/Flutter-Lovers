@@ -15,6 +15,7 @@ class _KonusmalarimPageState extends State<KonusmalarimPage> {
   @override
   Widget build(BuildContext context) {
     final _userModel = Provider.of<UserModel>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Konuşmalarım"),
@@ -29,36 +30,68 @@ class _KonusmalarimPageState extends State<KonusmalarimPage> {
           } else {
             var tumKonusmalar = konusmaListesi.data;
 
-            return RefreshIndicator(
-              onRefresh: _konusmalarimListesiniYenile,
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  var oAnkiKonusma = tumKonusmalar[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context, rootNavigator: true)
-                          .push(MaterialPageRoute(
-                              builder: (context) => SohbetPage(
-                                    currentUser: _userModel.user,
-                                    sohbetEdilenUser: User.idVeResim(
-                                        userId: oAnkiKonusma.kimle_konusuyor,
-                                        profilUrl: oAnkiKonusma
-                                            .konusulanUserProfileURL),
-                                  )));
-                    },
-                    child: ListTile(
-                      title: Text(oAnkiKonusma.son_yollanan_mesaj),
-                      subtitle: Text(oAnkiKonusma.konusulanUserName),
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(oAnkiKonusma.konusulanUserProfileURL),
+            if (tumKonusmalar.length > 0) {
+              return RefreshIndicator(
+                onRefresh: _konusmalarimListesiniYenile,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    var oAnkiKonusma = tumKonusmalar[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .push(MaterialPageRoute(
+                                builder: (context) => SohbetPage(
+                                      sohbetEdilenUser: _userModel.user,
+                                      currentUser: User.idVeResim(
+                                          userId: oAnkiKonusma.kimle_konusuyor,
+                                          profilUrl: oAnkiKonusma
+                                              .konusulanUserProfileURL),
+                                    )));
+                      },
+                      child: ListTile(
+                        title: Text(oAnkiKonusma.son_yollanan_mesaj),
+                        subtitle: Text(oAnkiKonusma.konusulanUserName +
+                            "                                               " +
+                            oAnkiKonusma.aradakiFark),
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              oAnkiKonusma.konusulanUserProfileURL),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: tumKonusmalar.length,
+                ),
+              );
+            } else {
+              return RefreshIndicator(
+                onRefresh: _konusmalarimListesiniYenile,
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Container(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.chat,
+                            color: Theme.of(context).primaryColor,
+                            size: 120,
+                          ),
+                          Text(
+                            "Henüz Konuşma Yok",
+                            style: TextStyle(fontSize: 36),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                itemCount: tumKonusmalar.length,
-              ),
-            );
+                    height: MediaQuery.of(context).size.height - 150,
+                  ),
+                ),
+              );
+            }
           }
         },
       ),
